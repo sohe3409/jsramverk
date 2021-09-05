@@ -27,6 +27,9 @@ export default class TextEditor extends Component {
             }
         return (
             <div>
+                <button onClick={save}>
+                    Save
+                </button>
                 <Editor
                     editorState={editorState}
                     toolbarClassName="toolbarClassName"
@@ -34,9 +37,6 @@ export default class TextEditor extends Component {
                     editorClassName="editorClassName"
                     onEditorStateChange={this.onEditorStateChange}
                 />
-                <button onClick={save}>
-                    Save
-                </button>
             </div>
         );
     }
