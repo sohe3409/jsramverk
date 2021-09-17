@@ -1,43 +1,112 @@
-import React, { Component } from 'react';
-import { EditorState, convertToRaw } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
+import React, { Component, useEffect } from 'react';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import axios from 'axios';
 
+class TextEditor extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            documents: [],
+            current: {},
+            content: "",
+            status: "new",
+            name: ""
+        };
 
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from 'draftjs-to-html';
-
-
-
-export default class TextEditor extends Component {
-
-    state = {
-        editorState: EditorState.createEmpty(),
+        this.handleChange = this.handleChange.bind(this);
+        this.saveDocument = this.saveDocument.bind(this);
+        this.handleName = this.handleName.bind(this);
     }
 
-    onEditorStateChange = (editorState) => {
-        this.setState({
-            editorState,
-        });
-    };
+
+    async saveDocument(event) {
+        let regex = /[a-zA-Z]/
+        if(this.state.name === "" || regex.test(this.state.name) == false) {
+            alert("Add a document name with at leaast one letter")
+        } else {
+            if (this.state.status === "new") {
+                await axios.post(`https://jsramverk-editor-sohe20.azurewebsites.net/create`, {
+                  name: this.state.name,
+                  content: this.state.content
+                })
+            } else {
+                this.state.current.content = this.state.content
+                await axios.put(`https://jsramverk-editor-sohe20.azurewebsites.net/update/${this.state.current._id}`, {
+                  name: this.state.name,
+                  content: this.state.content
+                })
+            }
+        }
+        window.location.reload(false)
+    }
+
+    async handleChange(event) {
+        if (event.target.value === "new") {
+            await this.setState({status: "new"});
+            this.setState({current: {name: "", content: ""}});
+        } else {
+            await this.setState({status: "edit"});
+            this.setState({current: JSON.parse(event.target.value)});
+            this.setState({name: this.state.current.name});
+        }
+
+        console.log(this.state.current)
+    }
+
+    handleName(event) {
+        this.setState({name: event.target.value});
+    }
+
+    inputHandler = (event, editor) => {
+        this.setState({content: editor.getData()});
+        console.log(this.state.current.id, this.state.content)
+
+    }
+
+    componentDidMount() {
+      axios.get(`https://jsramverk-editor-sohe20.azurewebsites.net/list`)
+        .then(res => {
+          const documents = res.data.data; // res.data.data is array of objects/documents
+          this.setState({ documents });
+        })
+    }
 
     render() {
-            const {editorState} = this.state;
-            function save() {
-                console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())))
-            }
+
         return (
             <div>
-                <button onClick={save}>
+                <div>
+                    <input value={this.state.name} onChange={this.handleName} placeholder="Document name" />
+                </div>
+
+
+                <select onChange={this.handleChange}>
+                    <option disabled={true}>Choose or create a document</option>
+                    <option value="new" >Create new</option>
+                    {this.state.documents.map((doc) => (
+                        <option value={JSON.stringify(doc)}>{doc.name}</option>
+                    ))}
+                </select>
+
+
+                <div>
+                    <CKEditor
+                      id="inputText"
+                      data={this.state.current.content}
+                      editor={ClassicEditor}
+                      onChange={this.inputHandler}
+                    />
+                </div>
+
+
+                <button onClick={this.saveDocument}>
                     Save
                 </button>
-                <Editor
-                    editorState={editorState}
-                    toolbarClassName="toolbarClassName"
-                    wrapperClassName="wrapperClassName"
-                    editorClassName="editorClassName"
-                    onEditorStateChange={this.onEditorStateChange}
-                />
+
             </div>
         );
     }
 }
+
+export default TextEditor;

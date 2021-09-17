@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  overflow-x: hidden;
+  background-color: #eee;
+  min-height: 100vh;
 }
 
 .App-logo {
@@ -26,6 +29,37 @@
 
 .App-link {
   color: #61dafb;
+}
+.App .ckeditor
+{
+color: blue;
+}
+.App .editor {
+    margin-left: 15%;
+    width: 70%;
+    padding-top: 3em;
+    text-align: center;
+    background-color: #eee;
+    overflow-x: hidden;
+}
+
+.App .toolbar {
+    width: 70%;
+    margin-left: 15%;
+}
+
+.App .textArea {
+    margin-top: 1.5em;
+    margin-left: 25%;
+    padding: 2em;
+    width: 50%;
+    min-height: 700px;
+    border: 2px solid yellow;
+    background-color: #fff;
+
+}
+.App div {
+    padding: 1em;
 }
 
 @keyframes App-logo-spin {
