@@ -23,7 +23,7 @@ class TextEditor extends Component {
     async saveDocument(event) {
         let regex = /[a-zA-Z]/
         if(this.state.name === "" || regex.test(this.state.name) == false) {
-            alert("Add a document name with at leaast one letter")
+            alert("Add a document name with at least one letter")
         } else {
             if (this.state.status === "new") {
                 await axios.post(`https://jsramverk-editor-sohe20.azurewebsites.net/create`, {
@@ -38,7 +38,11 @@ class TextEditor extends Component {
                 })
             }
         }
-        window.location.reload(false)
+        await axios.get(`https://jsramverk-editor-sohe20.azurewebsites.net/list`)
+          .then(res => {
+            const documents = res.data.data;
+            this.setState({ documents });
+          })
     }
 
     async handleChange(event) {
@@ -67,7 +71,7 @@ class TextEditor extends Component {
     componentDidMount() {
       axios.get(`https://jsramverk-editor-sohe20.azurewebsites.net/list`)
         .then(res => {
-          const documents = res.data.data; // res.data.data is array of objects/documents
+          const documents = res.data.data;
           this.setState({ documents });
         })
     }
@@ -77,11 +81,12 @@ class TextEditor extends Component {
         return (
             <div>
                 <div>
-                    <input value={this.state.name} onChange={this.handleName} placeholder="Document name" />
+                    <label htmlFor="doc-name">Document name: </label>
+                    <input id="doc-name" type="text" value={this.state.name} onChange={this.handleName} placeholder="Document name" />
                 </div>
 
 
-                <select onChange={this.handleChange}>
+                <select id="options" onChange={this.handleChange}>
                     <option disabled={true}>Choose or create a document</option>
                     <option value="new" >Create new</option>
                     {this.state.documents.map((doc) => (
