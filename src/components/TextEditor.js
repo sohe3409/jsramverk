@@ -23,7 +23,8 @@ class TextEditor extends Component {
     async saveDocument(event) {
         let regex = /[a-zA-Z]/
         if(this.state.name === "" || regex.test(this.state.name) == false) {
-            alert("Add a document name with at least one letter")
+            alert("Add a document name with at least one letter");
+            this.setState({name: "Untitled"});
         } else {
             if (this.state.status === "new") {
                 await axios.post(`https://jsramverk-editor-sohe20.azurewebsites.net/create`, {

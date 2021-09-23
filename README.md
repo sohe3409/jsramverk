@@ -1,3 +1,5 @@
+![Build Status](https://app.travis-ci.com/sohe3409/jsramverk.svg?branch=main)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
