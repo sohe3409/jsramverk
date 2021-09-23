@@ -13,13 +13,13 @@ import App from './App';
 //   expect(al).toBeInTheDocument();
 // });
 
-test('resets the document', () => {
-  render(<App />);
-  const documentName = screen.getByPlaceholderText(/Document name/i);
-  const newBtn = screen.getByText(/Save/i);
-  userEvent.click(newBtn);
-  expect(documentName).toHaveTextContent('Untitled');
-});
+// test('resets the document', () => {
+//   render(<App />);
+//   const documentName = screen.getByPlaceholderText(/Document name/i);
+//   const newBtn = screen.getByText(/Save/i);
+//   userEvent.click(newBtn);
+//   expect(documentName).toHaveTextContent('Untitled');
+// });
 
 test('Test default values', () => {
   render(<App />);
