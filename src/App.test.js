@@ -5,22 +5,6 @@ import userEvent from "@testing-library/user-event";
 import '@testing-library/jest-dom'
 import App from './App';
 
-// test('render App', async() => {
-//   const { getByText } = render(<App />);
-//   fireEvent.click(screen.getByText('Save'));
-//
-//   const al =   await screen.getByText('Untitled');
-//   expect(al).toBeInTheDocument();
-// });
-
-// test('resets the document', () => {
-//   render(<App />);
-//   const documentName = screen.getByPlaceholderText(/Document name/i);
-//   const newBtn = screen.getByText(/Save/i);
-//   userEvent.click(newBtn);
-//   expect(documentName).toHaveTextContent('Untitled');
-// });
-
 test('Test default values', () => {
   render(<App />);
   const name = screen.getByPlaceholderText('Document name');
