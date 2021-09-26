@@ -5,14 +5,15 @@ import userEvent from "@testing-library/user-event";
 import '@testing-library/jest-dom'
 import App from './App';
 
+window.alert = jest.fn();
+
 test('Test default values', () => {
+  window.alert.mockClear();
   render(<App />);
   const name = screen.getByPlaceholderText('Document name');
   expect(name).toHaveTextContent('');
   const create = screen.getByText(/Create new/i);
   expect(create).toHaveTextContent('Create new');
-  const save = screen.getByText(/Save/i);
-  expect(save).toBeInTheDocument();
 });
 
 test('See if alert shows if no title', () => {
