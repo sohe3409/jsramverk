@@ -21,6 +21,7 @@ class TextEditor extends Component {
 
 
     async saveDocument(event) {
+        this._isMounted = true;
         let regex = /[a-zA-Z]/
         if(this.state.name === "" || regex.test(this.state.name) == false) {
             alert("Add a document name with at least one letter");
