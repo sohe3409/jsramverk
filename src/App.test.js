@@ -13,8 +13,17 @@ test('Test default values', () => {
   expect(create).toHaveTextContent('Create new');
   const save = screen.getByText(/Save/i);
   expect(save).toBeInTheDocument();
-
 });
+
+test('See if alert shows if no title', () => {
+  render(<App />);
+
+  fireEvent.click(screen.getByText('Save'))
+
+  waitFor(() => {
+    expect(screen.getByText("Add a document name with at least one letter")).toBeInTheDocument()
+  })
+})
 
 test('Test for select document', () => {
   const { getByText } = render(<App />);
