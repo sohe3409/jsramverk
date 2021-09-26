@@ -74,6 +74,7 @@ class TextEditor extends Component {
           const documents = res.data.data;
           this.setState({ documents });
         })
+      this.setState({ status: "new"});
     }
 
     render() {
