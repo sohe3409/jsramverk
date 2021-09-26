@@ -9,3 +9,4 @@ before_script:
 
 script:
     - npm test
+    - CI=false npm run build
