@@ -4,8 +4,8 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import axios from 'axios';
 
 class TextEditor extends Component {
-    constructor(props) {
-        super(props);
+    constructor() {
+        super();
         this.state = {
             documents: [],
             current: {},
