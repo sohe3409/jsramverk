@@ -1,6 +1,6 @@
 
 import React from 'react'
-import {render, fireEvent, waitFor, screen} from '@testing-library/react'
+import {render, fireEvent, act, waitFor, screen} from '@testing-library/react'
 import userEvent from "@testing-library/user-event";
 import '@testing-library/jest-dom'
 import App from './App';
@@ -17,7 +17,9 @@ test('Test default values', () => {
 });
 
 test('See if alert shows if no title', () => {
-  render(<App />);
+  act(() => {
+      render(<App />);
+  })
 
   fireEvent.click(screen.getByText('Save'))
 
