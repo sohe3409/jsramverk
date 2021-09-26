@@ -21,7 +21,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --exit",
     "eject": "react-scripts eject",
     "deploy": "npm run build && rsync -av --delete build/ sohe20@ssh.student.bth.se:www/editor"
   },
