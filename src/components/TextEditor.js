@@ -2,6 +2,10 @@ import React, { Component, useEffect } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import axios from 'axios';
+import socketIOClient from "socket.io-client";
+const ENDPOINT = "https://jsramverk-editor-sohe20.azurewebsites.net";
+const socket = socketIOClient(ENDPOINT);
+
 
 class TextEditor extends Component {
     constructor() {
@@ -19,10 +23,26 @@ class TextEditor extends Component {
         this.handleName = this.handleName.bind(this);
     }
 
+    componentDidMount() {
+      axios.get(`https://jsramverk-editor-sohe20.azurewebsites.net/list`)
+        .then(res => {
+          const documents = res.data.data;
+          this.setState({ documents });
+        })
+    }
+
+    componentDidUpdate() {
+        socket.on("doc", (data) => {
+            if (this.state.content !== data.html) {
+                this.setState({ content: data.html });
+                console.log("vad händer", data)
+            }
+        });
+    }
 
     async saveDocument(event) {
-        let regex = /[a-zA-Z]/
-        if(this.state.name === "" || regex.test(this.state.name) == false) {
+      let regex = /[a-zA-Z]/
+      if(this.state.name === "" || regex.test(this.state.name) == false) {
             alert("Add a document name with at least one letter");
         } else {
             if (this.state.status === "new") {
@@ -40,22 +60,22 @@ class TextEditor extends Component {
         }
         await axios.get(`https://jsramverk-editor-sohe20.azurewebsites.net/list`)
           .then(res => {
-            const documents = res.data.data;
-            this.setState({ documents });
+              const documents = res.data.data;
+              this.setState({ documents });
           })
     }
 
     async handleChange(event) {
         if (event.target.value === "new") {
             await this.setState({status: "new"});
-            this.setState({current: {name: "", content: ""}});
+            this.setState({current: {name: "", content: ""}, content: "", name: ""});
         } else {
             await this.setState({status: "edit"});
             this.setState({current: JSON.parse(event.target.value)});
             this.setState({name: this.state.current.name});
+            this.setState({content: this.state.current.content});
+            socket.emit("create", (this.state.current._id))
         }
-
-        console.log(this.state.current)
     }
 
     handleName(event) {
@@ -64,27 +84,23 @@ class TextEditor extends Component {
 
     inputHandler = (event, editor) => {
         this.setState({content: editor.getData()});
-        console.log(this.state.current.id, this.state.content)
 
+        let data = {
+          _id: this.state.current._id,
+          html: this.state.content
+        };
+
+        socket.emit("doc", data);
     }
 
-    componentDidMount() {
-      axios.get(`https://jsramverk-editor-sohe20.azurewebsites.net/list`)
-        .then(res => {
-          const documents = res.data.data;
-          this.setState({ documents });
-        })
-    }
 
     render() {
-
         return (
             <div>
                 <div>
                     <label htmlFor="doc-name">Document name: </label>
                     <input id="doc-name" type="text" value={this.state.name} onChange={this.handleName} placeholder="Document name" />
                 </div>
-
 
                 <select id="options" onChange={this.handleChange}>
                     <option disabled={true}>Choose or create a document</option>
@@ -94,21 +110,18 @@ class TextEditor extends Component {
                     ))}
                 </select>
 
-
                 <div>
                     <CKEditor
                       id="inputText"
-                      data={this.state.current.content}
+                      data={this.state.content}
                       editor={ClassicEditor}
                       onChange={this.inputHandler}
                     />
                 </div>
 
-
                 <button data-testid="saveBtn" onClick={this.saveDocument}>
                     Save
                 </button>
-
             </div>
         );
     }

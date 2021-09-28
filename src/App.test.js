@@ -8,7 +8,6 @@ import App from './App';
 window.alert = jest.fn();
 
 test('Test default values', () => {
-  window.alert.mockClear();
   render(<App />);
   const name = screen.getByPlaceholderText('Document name');
   expect(name).toHaveTextContent('');
@@ -16,13 +15,14 @@ test('Test default values', () => {
   expect(create).toHaveTextContent('Create new');
 });
 
-// test('See if alert shows if no title', () => {
-//   render(<App />);
-//   fireEvent.click(screen.getByText('Save'))
-//   waitFor(() => {
-//     expect(screen.getByText("Add a document name with at least one letter")).toBeInTheDocument()
-//   })
-// })
+test('See if alert shows if no title', () => {
+  window.alert.mockClear();
+  render(<App />);
+  fireEvent.click(screen.getByText('Save'))
+  waitFor(() => {
+    expect(screen.getByText("Add a document name with at least one letter")).toBeInTheDocument()
+  })
+})
 
 test('Test for select document', () => {
   const { getByText } = render(<App />);
