@@ -3,6 +3,7 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import axios from 'axios';
 import socketIOClient from "socket.io-client";
+// const ENDPOINT = "http://127.0.0.1:1338";
 const ENDPOINT = "https://jsramverk-editor-sohe20.azurewebsites.net";
 const socket = socketIOClient(ENDPOINT);
 
@@ -24,7 +25,7 @@ class TextEditor extends Component {
     }
 
     componentDidMount() {
-      axios.get(`https://jsramverk-editor-sohe20.azurewebsites.net/list`)
+      axios.get(`${ENDPOINT}/list`)
         .then(res => {
           const documents = res.data.data;
           this.setState({ documents });
@@ -35,7 +36,7 @@ class TextEditor extends Component {
         socket.on("doc", (data) => {
             if (this.state.content !== data.html) {
                 this.setState({ content: data.html });
-                console.log("vad händer", data)
+                console.log("vad händer")
             }
         });
     }
@@ -46,19 +47,19 @@ class TextEditor extends Component {
             alert("Add a document name with at least one letter");
         } else {
             if (this.state.status === "new") {
-                await axios.post(`https://jsramverk-editor-sohe20.azurewebsites.net/create`, {
+                await axios.post(`${ENDPOINT}/create`, {
                   name: this.state.name,
                   content: this.state.content
                 })
             } else {
                 this.state.current.content = this.state.content
-                await axios.put(`https://jsramverk-editor-sohe20.azurewebsites.net/update/${this.state.current._id}`, {
+                await axios.put(`${ENDPOINT}/update/${this.state.current._id}`, {
                   name: this.state.name,
                   content: this.state.content
                 })
             }
         }
-        await axios.get(`https://jsramverk-editor-sohe20.azurewebsites.net/list`)
+        await axios.get(`${ENDPOINT}/list`)
           .then(res => {
               const documents = res.data.data;
               this.setState({ documents });
@@ -85,14 +86,17 @@ class TextEditor extends Component {
     inputHandler = (event, editor) => {
         this.setState({content: editor.getData()});
 
+
+    }
+
+    onKeyPressed = () => {
         let data = {
-          _id: this.state.current._id,
-          html: this.state.content
+            _id: this.state.current._id,
+            html: this.state.content
         };
 
         socket.emit("doc", data);
     }
-
 
     render() {
         return (
@@ -110,7 +114,7 @@ class TextEditor extends Component {
                     ))}
                 </select>
 
-                <div>
+                <div onKeyUp={this.onKeyPressed}>
                     <CKEditor
                       id="inputText"
                       data={this.state.content}
