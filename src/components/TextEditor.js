@@ -101,31 +101,41 @@ class TextEditor extends Component {
     render() {
         return (
             <div>
-                <div>
-                    <label htmlFor="doc-name">Document name: </label>
-                    <input id="doc-name" type="text" value={this.state.name} onChange={this.handleName} placeholder="Document name" />
+                <div class="choice">
+                    <label style={{width: "200px", marginBottom: "10px"}} htmlFor="doc-name">Document name: </label><br/>
+                    <input style={{width: "200px", height: "25px", marginBottom: "10px"}} id="doc-name" type="text" value={this.state.name} onChange={this.handleName} placeholder="Document name" />
+                    <br/>
+                    <select style={{width: "208px", height: "30px"}} id="options" onChange={this.handleChange}>
+                        <option disabled={true}>Choose or create a document</option>
+                        <option value="new" >Create new</option>
+                        {this.state.documents.map((doc) => (
+                            <option value={JSON.stringify(doc)}>{doc.name}</option>
+                        ))}
+                    </select>
+                    <button class="save-btn" onClick={this.saveDocument}>
+                    Save
+                    </button>
                 </div>
 
-                <select id="options" onChange={this.handleChange}>
-                    <option disabled={true}>Choose or create a document</option>
-                    <option value="new" >Create new</option>
-                    {this.state.documents.map((doc) => (
-                        <option value={JSON.stringify(doc)}>{doc.name}</option>
-                    ))}
-                </select>
 
-                <div onKeyUp={this.onKeyPressed}>
+
+                <div class="text-editor" onKeyUp={this.onKeyPressed}>
                     <CKEditor
-                      id="inputText"
-                      data={this.state.content}
-                      editor={ClassicEditor}
-                      onChange={this.inputHandler}
+                        id="inputText"
+                        data={this.state.content}
+                        editor={ClassicEditor}
+                        onChange={this.inputHandler}
+                        onReady={(editor) => {
+                            editor.editing.view.change((writer) => {
+                            writer.setStyle(
+                                "height",
+                                "600px",
+                                editor.editing.view.document.getRoot()
+                            );
+                            });
+                        }}
                     />
                 </div>
-
-                <button data-testid="saveBtn" onClick={this.saveDocument}>
-                    Save
-                </button>
             </div>
         );
     }

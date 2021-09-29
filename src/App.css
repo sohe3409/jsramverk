@@ -17,7 +17,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #AC98AC;
   min-height: 10vh;
   display: flex;
   flex-direction: column;
@@ -27,39 +27,43 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-.App .ckeditor
-{
-color: blue;
-}
+
 .App .editor {
     margin-left: 15%;
     width: 70%;
-    padding-top: 3em;
-    text-align: center;
     background-color: #eee;
     overflow-x: hidden;
 }
 
-.App .toolbar {
-    width: 70%;
-    margin-left: 15%;
+.App .save-btn {
+  padding: 8px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  color: #fff;
+  background-color: #76bc76;
+  border: none;
+  border-radius: 15px;
+  float: right;
 }
 
-.App .textArea {
-    margin-top: 1.5em;
-    margin-left: 25%;
-    padding: 2em;
-    width: 50%;
-    min-height: 700px;
-    border: 2px solid yellow;
+.App .choice {
+    max-width: 1000px;
+    text-align: left;
+
+}
+
+.App .editor .text-editor {
+    margin-top: 1em;
+    /* border: 2px solid #AC98AC; */
     background-color: #fff;
+    max-width: 1000px;
+    border-radius: 15px;
 
 }
 .App div {
     padding: 1em;
+    text-align: center;
 }
 
 @keyframes App-logo-spin {
