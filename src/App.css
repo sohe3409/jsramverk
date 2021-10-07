@@ -37,6 +37,7 @@
 
 .App .save-btn {
   padding: 8px 20px;
+  margin: 5px;
   font-size: 16px;
   cursor: pointer;
   text-align: center;
@@ -66,6 +67,95 @@
     text-align: center;
 }
 
+
+
+
+.App .message {
+    font-size: 20px;
+    font-family: "Open Sans", sans-serif;
+}
+
+.App .base-container {
+    width: 100%;
+    height: 500px;
+    margin-top: 100px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.App .base-container .header {
+    font-size: 20px;
+    font-family: "Open Sans", sans-serif;
+    background-color: #f3f3f3 ;
+    border-radius: 4px;
+}
+
+.App .base-container .content {
+    display: flex;
+    flex-direction: column;
+    margin: 2em;
+    border-radius: 20px;
+    border: 3px solid #add8e6;
+}
+
+.App .register {
+      float: right;
+      background-color: #add8e6;
+}
+
+
+.App .base-container form {
+      margin-top: 2em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+}
+
+.App .base-container form {
+      margin-top: 2.5em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+}
+
+.App .base-container input {
+          margin-top: 6px;
+          min-width: 18em;
+          height: 37px;
+          padding: 0px 10px;
+          font-size: 16px;
+          font-family: "Open Sans", sans-serif;
+          background-color: #fff;
+          border: 0;
+          border-radius: 4px;
+          margin-bottom: 31px;
+          transition: all 250ms ease-in-out;
+          &:hover {
+            //background-color: #ffffff;
+            //box-shadow: 0px 0px 14px 0.3px #0e81ce96;
+          }
+
+          &:focus {
+            outline: none;
+            box-shadow: 0px 0px 12px 0.8px #3474dbb2;
+          }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -73,4 +163,14 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+
+@media (max-width:1000px) {
+    .App .editor {
+        margin-left: 7px;
+        width: 90%;
+
+    }
 }

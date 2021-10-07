@@ -12,23 +12,44 @@ class TextEditor extends Component {
     constructor() {
         super();
         this.state = {
-            documents: [],
-            current: {},
-            content: "",
             status: "new",
-            name: ""
+            current: {},
+            documents: [],
+            users: [],
+            titles: [],
+            id: "",
+            content: "",
+            name: "",
+            allow: []
         };
 
         this.handleChange = this.handleChange.bind(this);
+        this.handleUsers = this.handleUsers.bind(this);
         this.saveDocument = this.saveDocument.bind(this);
         this.handleName = this.handleName.bind(this);
+        this.getDocs = this.getDocs.bind(this);
+        this.save = this.save.bind(this);
     }
 
     componentDidMount() {
-      axios.get(`${ENDPOINT}/list`)
+        axios.get(`${ENDPOINT}/list`, {
+            headers: {
+                'x-access-token': this.props.token
+            }
+        })
         .then(res => {
-          const documents = res.data.data;
-          this.setState({ documents });
+            const users = res.data.data;
+            console.log(res.data.data)
+            users.map((user) => {
+                if (user.email !== this.props.user) {
+                    this.state.users.push(user.email)
+                }
+            });
+            this.state.allow.push(this.props.user);
+            console.log(this.state.users)
+        })
+        .then(res => {
+            this.getDocs();
         })
     }
 
@@ -41,42 +62,82 @@ class TextEditor extends Component {
         });
     }
 
+    getDocs = () => {
+        axios.get(`${ENDPOINT}/list/${this.props.user}`, {
+            headers: {
+                'x-access-token': this.props.token
+            }
+        })
+        .then(res => {
+            const documents = res.data.data;
+            const id = res.data.id;
+            this.setState({ documents });
+            this.setState({ id });
+            this.state.documents.map((doc) => (
+                this.state.titles.push(doc.name)
+            ))
+        })
+    }
+
     async saveDocument(event) {
-      let regex = /[a-zA-Z]/
-      if(this.state.name === "" || regex.test(this.state.name) == false) {
-            alert("Add a document name with at least one letter");
+        let regex = /[a-zA-Z]/
+        if(this.state.name === "" || regex.test(this.state.name) == false) {
+              alert("Add a document name with at least one letter");
         } else {
             if (this.state.status === "new") {
-                await axios.post(`${ENDPOINT}/create`, {
-                  name: this.state.name,
-                  content: this.state.content
-                })
+                if ( this.state.titles.includes(this.state.name)) {
+                    alert("There is already a document with this name");
+                } else {
+                    await axios.put(`${ENDPOINT}/create/${this.state.id}`, {
+                        doc: {
+                            name: this.state.name,
+                            content: this.state.content,
+                            allowed_users: this.state.allow
+                        },
+                        headers: {
+                            'x-access-token': this.props.token
+                        }
+                    })
+                }
             } else {
                 this.state.current.content = this.state.content
-                await axios.put(`${ENDPOINT}/update/${this.state.current._id}`, {
-                  name: this.state.name,
-                  content: this.state.content
+                await axios.put(`${ENDPOINT}/update/${this.state.id}`, {
+                    prev: this.state.current.name,
+                    doc: {
+                        name: this.state.name,
+                        content: this.state.content,
+                        allowed_users: this.state.allow
+                    },
+                    headers: {
+                        'x-access-token': this.props.token
+                    }
                 })
             }
         }
-        await axios.get(`${ENDPOINT}/list`)
-          .then(res => {
-              const documents = res.data.data;
-              this.setState({ documents });
-          })
     }
 
     async handleChange(event) {
+        await this.getDocs();
         if (event.target.value === "new") {
             await this.setState({status: "new"});
-            this.setState({current: {name: "", content: ""}, content: "", name: ""});
+            this.setState({current: {name: "", content: ""}, content: "", name: "", allow: []});
         } else {
             await this.setState({status: "edit"});
             this.setState({current: JSON.parse(event.target.value)});
             this.setState({name: this.state.current.name});
             this.setState({content: this.state.current.content});
+            this.setState({allow: this.state.current.allowed_users});
             socket.emit("create", (this.state.current._id))
         }
+    }
+
+    handleUsers(event) {
+        if ( this.state.allow.includes(event.target.value)) {
+            alert("Already shared with ths user");
+        } else {
+            this.state.allow.push(event.target.value);
+        }
+        console.log("ALLOW", this.state.allow)
     }
 
     handleName(event) {
@@ -85,8 +146,6 @@ class TextEditor extends Component {
 
     inputHandler = (event, editor) => {
         this.setState({content: editor.getData()});
-
-
     }
 
     onKeyPressed = () => {
@@ -98,7 +157,25 @@ class TextEditor extends Component {
         socket.emit("doc", data);
     }
 
+    async save() {
+        await this.saveDocument();
+        await this.getDocs();
+    }
+
+
     render() {
+        let share;
+        if (this.state.status == "new") {
+            share = (
+              <select style={{width: "208px", height: "30px", marginLeft: "5px"}} id="options" onChange={this.handleUsers}>
+              <option disabled={true} selected>Share with users</option>
+              {this.state.users.map((user) => (
+                (<option value={user}>{user}</option>)
+              ))}
+              </select>
+            )
+            console.log("hallå",)
+        }
         return (
             <div>
                 <div class="choice">
@@ -112,8 +189,14 @@ class TextEditor extends Component {
                             <option value={JSON.stringify(doc)}>{doc.name}</option>
                         ))}
                     </select>
-                    <button class="save-btn" onClick={this.saveDocument}>
-                    Save
+
+                    {share}
+                    <button class="save-btn" onClick={this.getDocs}>
+                        Update
+                    </button>
+
+                    <button class="save-btn" onClick={this.save}>
+                        Save
                     </button>
                 </div>
 
@@ -140,5 +223,14 @@ class TextEditor extends Component {
         );
     }
 }
+// {this.state.users.map((user) => (
+//     this.state.allow.map((chosen) => {
+//           if (user == chosen) {
+//               return (<option style={{backgroundColor: "powderblue"}} value={user}>{user}</option>)
+//           } else {
+//               return (<option value={user}>{user}</option>)
+//           }
+//     })
+// ))}
 
 export default TextEditor;
