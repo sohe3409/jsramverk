@@ -3,7 +3,7 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import axios from 'axios';
 import socketIOClient from "socket.io-client";
-// const ENDPOINT = "http://127.0.0.1:1338";
+// const ENDPOINT = "http://localhost:1338";
 const ENDPOINT = "https://jsramverk-editor-sohe20.azurewebsites.net";
 const socket = socketIOClient(ENDPOINT);
 
@@ -31,15 +31,13 @@ class TextEditor extends Component {
         this.save = this.save.bind(this);
     }
 
-    componentDidMount() {
-        axios.get(`${ENDPOINT}/list`, {
-            headers: {
-                'x-access-token': this.props.token
-            }
+    componentWillMount() {
+        axios.post(`${ENDPOINT}/graphql`, {
+            query: "{ users { email } }"
         })
-        .then(res => {
-            const users = res.data.data;
-            console.log(res.data.data)
+        .then(data => {
+            const users = data.data.data.users;
+            console.log("DATA", data.data.data.users)
             users.map((user) => {
                 if (user.email !== this.props.user) {
                     this.state.users.push(user.email)
@@ -48,9 +46,7 @@ class TextEditor extends Component {
             this.state.allow.push(this.props.user);
             console.log(this.state.users)
         })
-        .then(res => {
-            this.getDocs();
-        })
+        .then(this.getDocs());
     }
 
     componentDidUpdate() {
@@ -157,13 +153,13 @@ class TextEditor extends Component {
         socket.emit("doc", data);
     }
 
-    async save() {
-        await this.saveDocument();
-        await this.getDocs();
+    save() {
+        this.saveDocument().then(this.getDocs());
     }
 
 
     render() {
+        console.log("rendering")
         let share;
         if (this.state.status == "new") {
             share = (
@@ -174,7 +170,6 @@ class TextEditor extends Component {
               ))}
               </select>
             )
-            console.log("hallå",)
         }
         return (
             <div>
@@ -223,14 +218,5 @@ class TextEditor extends Component {
         );
     }
 }
-// {this.state.users.map((user) => (
-//     this.state.allow.map((chosen) => {
-//           if (user == chosen) {
-//               return (<option style={{backgroundColor: "powderblue"}} value={user}>{user}</option>)
-//           } else {
-//               return (<option value={user}>{user}</option>)
-//           }
-//     })
-// ))}
 
 export default TextEditor;
