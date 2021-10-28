@@ -27,13 +27,13 @@ class App extends React.Component {
     render() {
         if (this.state.token) {
             return (
-                <div className="App">
+                <div>
                     <header className="App-header">
                         <p>
                           Sofias Text Editor
                         </p>
                     </header>
-                    <div>
+                    <div className="App">
                         <TextEditor user = {this.state.user} token = {this.state.token} />
                     </div>
                 </div>

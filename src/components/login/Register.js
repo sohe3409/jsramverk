@@ -21,10 +21,6 @@ export class Register extends React.Component {
         .then(res => {
             this.props.parentCallback(res.data.data);
         })
-        .catch(err => {
-            console.log(err.detail)
-            this.props.parentCallback(err);
-        })
     }
 
 
